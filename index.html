@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velocivyx Racing Team</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a1a1a 0%, #1a2e2e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(0, 20, 20, 0.8);
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 3px solid #40E0D0;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #40E0D0, #87CEEB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: 3px;
+        }
+
+        .tagline {
+            font-size: 1rem;
+            color: #aaa;
+            letter-spacing: 2px;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            background: rgba(0, 20, 20, 0.6);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn {
+            background: transparent;
+            color: #fff;
+            border: none;
+            padding: 1.2rem 2.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(64, 224, 208, 0.1);
+            border-bottom-color: #40E0D0;
+        }
+
+        .nav-btn.active {
+            background: rgba(64, 224, 208, 0.2);
+            border-bottom-color: #40E0D0;
+        }
+
+        .content {
+            padding: 3rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Reaction Time Test */
+        .reaction-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .reaction-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #40E0D0, #ADFF2F);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .reaction-desc {
+            font-size: 1.1rem;
+            color: #aaa;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        .lights-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 3rem 0;
+            padding: 2rem;
+            background: rgba(0, 20, 20, 0.5);
+            border-radius: 20px;
+            border: 2px solid rgba(64, 224, 208, 0.3);
+        }
+
+        .light {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #1a3333;
+            border: 3px solid #2a5555;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .light.on {
+            background: #ADFF2F;
+            border-color: #ADFF2F;
+            box-shadow: 0 0 40px #ADFF2F, 0 0 60px #ADFF2F;
+        }
+
+        .reaction-button {
+            background: linear-gradient(45deg, #40E0D0, #90EE90);
+            color: #0a1a1a;
+            border: none;
+            padding: 1.5rem 4rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 2rem 0;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(64, 224, 208, 0.4);
+        }
+
+        .reaction-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(64, 224, 208, 0.6);
+        }
+
+        .reaction-button:active {
+            transform: translateY(-1px);
+        }
+
+        .reaction-button:disabled {
+            background: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .result {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(0, 20, 20, 0.5);
+            border-radius: 15px;
+            border: 2px solid rgba(135, 206, 235, 0.3);
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .result-time {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #ADFF2F;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-text {
+            font-size: 1.2rem;
+            color: #aaa;
+        }
+
+        .false-start {
+            color: #40E0D0;
+            font-size: 2rem;
+            font-weight: bold;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .best-time {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(144, 238, 144, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(144, 238, 144, 0.3);
+        }
+
+        /* Team Members */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .team-card {
+            background: rgba(0, 20, 20, 0.5);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 2px solid rgba(64, 224, 208, 0.3);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+            border-color: #40E0D0;
+            box-shadow: 0 20px 40px rgba(64, 224, 208, 0.3);
+        }
+
+        .team-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #40E0D0, #90EE90);
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #0a1a1a;
+        }
+
+        .team-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #ADFF2F;
+        }
+
+        .team-role {
+            color: #aaa;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .team-desc {
+            color: #ccc;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* Sponsors */
+        .sponsor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .sponsor-card {
+            background: rgba(0, 30, 30, 0.5);
+            border-radius: 15px;
+            padding: 2.5rem;
+            border: 2px solid rgba(135, 206, 235, 0.3);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .sponsor-card:hover {
+            transform: translateY(-10px);
+            border-color: #87CEEB;
+            box-shadow: 0 20px 40px rgba(135, 206, 235, 0.3);
+            background: rgba(0, 40, 40, 0.6);
+        }
+
+        .sponsor-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1.5rem;
+            background: rgba(64, 224, 208, 0.2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ADFF2F;
+        }
+
+        .sponsor-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .sponsor-tier {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: linear-gradient(45deg, #40E0D0, #90EE90);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #0a1a1a;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(45deg, #40E0D0, #ADFF2F);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2rem;
+            }
+
+            .nav-btn {
+                padding: 1rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .lights-container {
+                gap: 1rem;
+            }
+
+            .light {
+                width: 50px;
+                height: 50px;
+            }
+
+            .reaction-button {
+                padding: 1rem 2rem;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">VELOCIVYX</div>
+        <div class="tagline">Velocity for victory, Redifinig Rapid</div>
+    </div>
+
+    <div class="nav">
+        <button class="nav-btn active" onclick="showTab('reaction')">Reaction Test</button>
+        <button class="nav-btn" onclick="showTab('team')">Team Members</button>
+        <button class="nav-btn" onclick="showTab('sponsors')">Sponsors</button>
+    </div>
+
+    <div class="content">
+        <!-- Reaction Time Test Tab -->
+        <div id="reaction" class="tab-content active">
+            <div class="reaction-container">
+                <h2 class="reaction-title">F1 Reaction Time Test</h2>
+                <p class="reaction-desc">
+                    Test your reaction time like an F1 driver! Watch the lights carefully. 
+                    When all 5 lights go out, click the button as fast as you can. 
+                    But be careful - clicking before all lights go out results in a FALSE START!
+                </p>
+
+                <div class="lights-container">
+                    <div class="light" id="light1"></div>
+                    <div class="light" id="light2"></div>
+                    <div class="light" id="light3"></div>
+                    <div class="light" id="light4"></div>
+                    <div class="light" id="light5"></div>
+                </div>
+
+                <button class="reaction-button" id="reactionBtn" onclick="handleReaction()">
+                    START TEST
+                </button>
+
+                <div class="result" id="result">
+                    <div class="result-text">Click START TEST to begin</div>
+                </div>
+
+                <div class="best-time" id="bestTime" style="display: none;">
+                    <strong>Your Best Time:</strong> <span id="bestTimeValue">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Members Tab -->
+        <div id="team" class="tab-content">
+            <h2 class="section-title">Meet Our Team</h2>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-photo">AS</div>
+                    <div class="team-name">Avikaa Singh</div>
+                    <div class="team-role">Team Manager</div>
+                    <div class="team-desc">
+                        With strategic thinking and a drive for excellence, she leads Velocivyx with confidence and purpose.
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-photo">AV</div>
+                    <div class="team-name">Aarav Verma</div>
+                    <div class="team-role">Design and Manufacturing Engineer</div>
+                    <div class="team-desc">
+                        Expert in 3D designing and website making. Pushes the boundaries of performance engineering.
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-photo">AV</div>
+                    <div class="team-name">Anvi Verma</div>
+                    <div class="team-role">Resource Manager and Co - Sponsership Manager</div>
+                    <div class="team-desc">
+                        Anvi ensures that Velocivyx has what it needs—while keeping the team spirit high with her vibrant personality.
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="team-photo">AA</div>
+                    <div class="team-name">Adhira Aggarwal</div>
+                    <div class="team-role">Sponsership Manager and Graphis designer</div>
+                    <div class="team-desc">
+                        Adhira represents Velocivyx with professionalism, clarity, and warmth—making her an essential force in securing the teams success.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sponsors Tab -->
+        <div id="sponsors" class="tab-content">
+            <h2 class="section-title">Our Sponsors</h2>
+            <div class="sponsor-grid">
+                <div class="sponsor-card">
+                    <div class="sponsor-logo">⚡</div>
+                    <div class="sponsor-name">TechDrive Systems</div>
+                    <div class="sponsor-tier">Platinum Sponsor</div>
+                    <div class="team-desc">
+                        Leading provider of advanced automotive control systems and high-performance electronics.
+                    </div>
+                </div>
+                <div class="sponsor-card">
+                    <div class="sponsor-logo">🔧</div>
+                    <div class="sponsor-name">Precision Engineering Co.</div>
+                    <div class="sponsor-tier">Gold Sponsor</div>
+                    <div class="team-desc">
+                        Supplying precision-machined components and manufacturing expertise for optimal performance.
+                    </div>
+                </div>
+                <div class="sponsor-card">
+                    <div class="sponsor-logo">⚙️</div>
+                    <div class="sponsor-name">Velocity Materials</div>
+                    <div class="sponsor-tier">Gold Sponsor</div>
+                    <div class="team-desc">
+                        Advanced composite materials and lightweight solutions for competitive racing applications.
+                    </div>
+                </div>
+                <div class="sponsor-card">
+                    <div class="sponsor-logo">💻</div>
+                    <div class="sponsor-name">DataStream Analytics</div>
+                    <div class="sponsor-tier">Silver Sponsor</div>
+                    <div class="team-desc">
+                        Real-time data analytics platform helping us make split-second decisions on race day.
+                    </div>
+                </div>
+                <div class="sponsor-card">
+                    <div class="sponsor-logo">🏁</div>
+                    <div class="sponsor-name">RaceTech Industries</div>
+                    <div class="sponsor-tier">Silver Sponsor</div>
+                    <div class="team-desc">
+                        Comprehensive racing equipment and safety gear for professional motorsports teams.
+                    </div>
+                </div>
+                <div class="sponsor-card">
+                    <div class="sponsor-logo">🛠️</div>
+                    <div class="sponsor-name">Innovation Labs</div>
+                    <div class="sponsor-tier">Bronze Sponsor</div>
+                    <div class="team-desc">
+                        Supporting STEM education and providing prototyping facilities for next-gen racing technology.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testRunning = false;
+        let lightsOn = false;
+        let startTime = 0;
+        let bestTime = null;
+        let currentTimeout = null;
+
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const btns = document.querySelectorAll('.nav-btn');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            btns.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function handleReaction() {
+            const btn = document.getElementById('reactionBtn');
+            const result = document.getElementById('result');
+
+            if (!testRunning && !lightsOn) {
+                startTest();
+            } else if (lightsOn) {
+                falseStart();
+            } else if (testRunning) {
+                recordTime();
+            }
+        }
+
+        function startTest() {
+            testRunning = true;
+            lightsOn = true;
+            const btn = document.getElementById('reactionBtn');
+            const result = document.getElementById('result');
+            
+            btn.textContent = 'WAIT...';
+            btn.disabled = false;
+            result.innerHTML = '<div class="result-text">Watch the lights...</div>';
+
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById('light' + i).classList.remove('on');
+            }
+
+            let delay = 0;
+            for (let i = 1; i <= 5; i++) {
+                currentTimeout = setTimeout(() => {
+                    document.getElementById('light' + i).classList.add('on');
+                }, delay);
+                delay += 1000;
+            }
+
+            const randomDelay = delay + 1000 + Math.random() * 2000;
+            currentTimeout = setTimeout(() => {
+                for (let i = 1; i <= 5; i++) {
+                    document.getElementById('light' + i).classList.remove('on');
+                }
+                lightsOn = false;
+                startTime = Date.now();
+                btn.textContent = 'CLICK NOW!';
+                result.innerHTML = '<div class="result-text">GO! GO! GO!</div>';
+            }, randomDelay);
+        }
+
+        function falseStart() {
+            clearAllTimeouts();
+            
+            testRunning = false;
+            lightsOn = false;
+            const btn = document.getElementById('reactionBtn');
+            const result = document.getElementById('result');
+            
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById('light' + i).classList.remove('on');
+            }
+            
+            btn.textContent = 'TRY AGAIN';
+            btn.disabled = false;
+            result.innerHTML = '<div class="false-start">FALSE START!</div><div class="result-text">You clicked too early. Wait for all lights to go out!</div>';
+        }
+
+        function clearAllTimeouts() {
+            let id = setTimeout(function() {}, 0);
+            while (id--) {
+                clearTimeout(id);
+            }
+        }
+
+        function recordTime() {
+            const endTime = Date.now();
+            const reactionTime = endTime - startTime;
+            testRunning = false;
+            
+            const btn = document.getElementById('reactionBtn');
+            const result = document.getElementById('result');
+            const bestTimeDiv = document.getElementById('bestTime');
+            const bestTimeValue = document.getElementById('bestTimeValue');
+            
+            btn.textContent = 'TRY AGAIN';
+            btn.disabled = false;
+            
+            let message = '';
+            if (reactionTime < 200) {
+                message = 'INCREDIBLE! F1 level reflexes!';
+            } else if (reactionTime < 300) {
+                message = 'Excellent reaction time!';
+            } else if (reactionTime < 400) {
+                message = 'Good job! Keep practicing!';
+            } else {
+                message = 'Not bad! Try to beat your time!';
+            }
+            
+            result.innerHTML = `
+                <div class="result-time">${reactionTime}ms</div>
+                <div class="result-text">${message}</div>
+            `;
+
+            if (bestTime === null || reactionTime < bestTime) {
+                bestTime = reactionTime;
+                bestTimeDiv.style.display = 'block';
+                bestTimeValue.textContent = bestTime + 'ms';
+            }
+        }
+    </script>
+</body>
+</html>
